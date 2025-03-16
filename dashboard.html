@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TyreHub Order Management</title>
+    <link rel="stylesheet" href="dash.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .dashboard-container {
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        nav {
+            background: #007BFF;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-left a, .nav-right a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        .nav-right {
+            margin-left: auto;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-table th, .order-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .order-table th {
+            background-color: #007BFF;
+            color: white;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="dashboard.html"><h2>TyreHub</h2></a>
+        </div>
+        <div class="nav-right">
+            <a href="navigation.html">Location</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </nav>
+    <div class="dashboard-container">
+        <header>
+            <h1>TyreHub Orders</h1>
+            <input type="text" id="searchBar" placeholder="Search by Order ID or Customer Name" onkeyup="filterOrders()">
+            <select id="statusFilter" onchange="filterOrders()">
+                <option value="all">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="picked_up">Picked Up</option>
+                <option value="out_for_delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+            </select>
+            <button id="refreshOrders">Refresh Orders</button>
+        </header>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orderTableBody">
+                <!-- Dynamic order data will be injected here -->
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        <p>&copy; 2025 TyreHub. All rights reserved.</p>
+    </footer>
+    <script>
+        function filterOrders() {
+            let searchInput = document.getElementById("searchBar").value.toLowerCase();
+            let statusFilter = document.getElementById("statusFilter").value;
+            let tableRows = document.querySelectorAll("#orderTableBody tr");
+            
+            tableRows.forEach(row => {
+                let orderID = row.cells[0].textContent.toLowerCase();
+                let customerName = row.cells[1].textContent.toLowerCase();
+                let status = row.cells[3].textContent.toLowerCase();
+                
+                let matchesSearch = orderID.includes(searchInput) || customerName.includes(searchInput);
+                let matchesFilter = statusFilter === "all" || status === statusFilter;
+                
+                row.style.display = (matchesSearch && matchesFilter) ? "table-row" : "none";
+            });
+        }
+        function logout() {
+            alert("You have been logged out.");
+            window.location.href = "delivery.html";
+        }
+    </script>
+</body>
+</html>

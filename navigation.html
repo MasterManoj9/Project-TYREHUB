@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TyreHub Navigation & Tracking</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        .info {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button {
+            padding: 12px 20px;
+            margin-top: 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Navigation & Tracking</h1>
+        <p>Real-time tracking and best route suggestions</p>
+        <button onclick="getLocation()">Track My Location</button>
+        <div class="info" id="locationInfo"></div>
+        <div id="map"></div>
+    </div>
+    
+    <script>
+        let map;
+        let marker;
+
+        // Initialize the map
+        function initMap(lat, lng) {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat, lng },
+                zoom: 15
+            });
+
+            // Add marker for the user's location
+            marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                title: "Your Location"
+            });
+        }
+
+        // Function to get and track the user's location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    (position) => showPosition(position), 
+                    (error) => showError(error), 
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                document.getElementById("locationInfo").innerText = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        // Function to display the user's location on the map
+        function showPosition(position) {
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+
+            document.getElementById("locationInfo").innerText = `Latitude: ${lat}, Longitude: ${lng}`;
+            document.getElementById('map').style.display = 'block';
+
+            // If the map is not already initialized, initialize it
+            if (!map) {
+                initMap(lat, lng);
+            } else {
+                let userLocation = new google.maps.LatLng(lat, lng);
+                map.setCenter(userLocation); // Center the map on the new location
+                marker.setPosition(userLocation); // Update the marker's position
+            }
+        }
+
+        // Function to handle geolocation errors
+        function showError(error) {
+            let message;
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    message = "The request to get user location timed out.";
+                    break;
+                default:
+                    message = "An unknown error occurred.";
+                    break;
+            }
+            document.getElementById("locationInfo").innerText = message;
+        }
+    </script>
+</body>
+</html>
